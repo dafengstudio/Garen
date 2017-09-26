@@ -5,6 +5,9 @@
 import threading
 from gevent.server import StreamServer
 from gevent.pool import Pool
+from http_parser.reader import SocketReader
+from http_parser.http import HttpStream
+import requests
 
 
 class Garen(threading.Thread):
@@ -12,6 +15,7 @@ class Garen(threading.Thread):
     使用线程便于集成到其他系统
     """
     DEFAULT_CONFIG_NAME = ".garen.yml"
+    SESSION_MAP = {}
 
     def __init__(self, port, browser_name, config_fpath=None):
         """
@@ -73,11 +77,48 @@ class Garen(threading.Thread):
         """
         pass
 
-    def send_stream(self, dist_ip, domain, ):
+    def response_stream(self, socket):
+        """
+        1.  修正跨域的header
+        2.  修正 Set Header 到对于的域名
+        3.  返回正常的结果
+        :param socket:
+        :return:
+        """
         pass
 
-    def hander_stream(self, socket, address):
+    def proxy_request_stream(self, dist_ip, domain, method, headers, query_string, socket):
+        """
+        1.  根据 Ddmian 获取到 cookie
+        2.  获取到目标地址
+        3.  发送 HTTP 包
+
+        :param dist_ip:
+        :param domain:
+        :param method:
+        :param headers:
+        :param query_string:
+        :param socket:
+        :return:
+        """
         pass
+
+    def hander_revice_stream(self, socket, address):
+        """
+        1.  读取 request 流
+        2.
+        :param socket:
+        :param address:
+        :return:
+        """
+        p = HttpStream(SocketReader(socket), decompress=True)
+        domain = p['Host']
+        dist_ip = self.config[domain].ip
+        headers = p.headers()
+        method = p.method()
+        query_string = p.query_string()
+        self.proxy_request_stream(dist_ip, domain, method,
+                                  headers, query_string, socket)
 
     @property
     def server(self):
@@ -91,7 +132,8 @@ class Garen(threading.Thread):
         :return:
         """
         pool = Pool(10000)
-        self._server = StreamServer(('127.0.0.1', self.port), self.hander_stream, spawn=pool)  # creates a new server
+        self._server = StreamServer(('127.0.0.1', self.port), self.hander_revice_stream,
+                                    spawn=pool)  # creates a new server
         self._server.serve_forever()
 
 
