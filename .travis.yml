@@ -1,0 +1,28 @@
+language: python
+
+python:
+  - "2.7"
+
+cache:
+  - pip
+
+script: pytest
+
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - echo "start"
+
+install:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker build -t yishenggudou/centos-py-ruby:beta $TRAVIS_BUILD_DIR
+  - pwd
+  - docker images
+  - docker push yishenggudou/centos-py-ruby:beta
+
+after_success:
+  - echo "done"
