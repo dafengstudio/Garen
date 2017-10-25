@@ -7,3 +7,4 @@ cd -
 git add -f docs/*
 git commit -a -m 'auto build'
 git push origin
+open http://show.timger.info/Garen/index.html
