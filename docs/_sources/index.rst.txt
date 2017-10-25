@@ -6,6 +6,8 @@
 Welcome to Garan's documentation!
 =================================
 
+Garan 一个钱袋跨域调试解决方案
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
