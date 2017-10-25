@@ -1,1 +1,1 @@
-Search.setIndex({docnames:["index"],envversion:52,filenames:["index.rst"],objects:{},objnames:{},objtypes:{},terms:{},titles:["Welcome to Garan's documentation!"],titleterms:{and:0,document:0,garan:0,indice:0,tabl:0,to:0,welcom:0}})
+Search.setIndex({docnames:["config/index","index"],envversion:52,filenames:["config/index.rst","index.rst"],objects:{},objnames:{},objtypes:{},terms:{"contents:":1},titles:["\u914d\u7f6e\u6587\u4ef6","Welcome to Garan's documentation!"],titleterms:{and:1,document:1,garan:1,indice:1,tabl:1,to:1,welcom:1}})

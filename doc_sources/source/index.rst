@@ -10,6 +10,8 @@ Welcome to Garan's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   config/index
+
 
 
 Indices and tables
