@@ -5,3 +5,5 @@ make html
 cp -vrf ./build/html/* ../docs/
 cd -
 git add -f docs/*
+git commit -a -m 'auto build'
+git push origin
