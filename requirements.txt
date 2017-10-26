@@ -5,3 +5,4 @@ browsercookie==0.7.2 #https://pypi.python.org/pypi/browsercookie/0.7.2
 gevent #http://www.gevent.org/servers.html
 keyring==8.7
 pyyaml
+sphinxcontrib-inlinesyntaxhighlight
