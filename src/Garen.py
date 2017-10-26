@@ -92,6 +92,11 @@ class Garen(threading.Thread):
         pass
 
     def get_proxy_ip_port(self, ):
+        """
+
+        :return:
+        """
+        pass
 
     def response_stream(self, socket):
         """
