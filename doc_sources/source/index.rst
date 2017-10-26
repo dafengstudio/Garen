@@ -9,6 +9,8 @@ Garan 一个前端跨域调试解决方案
 
     config/index
     modules/Garen
+    usages/index
+
 
 
 Indices and tables
