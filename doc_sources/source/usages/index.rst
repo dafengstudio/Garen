@@ -5,5 +5,5 @@
     :maxdepth: 2
     :caption: Contents:
 
-    chrome
-    command
+    usages/chrome
+    usages/command
