@@ -8,7 +8,7 @@ Garan 一个前端跨域调试解决方案
     :caption: Contents:
 
     config/index
-
+    modules/Garen
 
 
 Indices and tables
