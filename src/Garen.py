@@ -91,6 +91,8 @@ class Garen(threading.Thread):
         """
         pass
 
+    def get_proxy_ip_port(self, ):
+
     def response_stream(self, socket):
         """
         1.  修正跨域的header

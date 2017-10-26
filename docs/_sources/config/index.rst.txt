@@ -1,4 +1,9 @@
-配置说明
+配置
 ============================
 
-格式
+.. toctree::
+    :maxdepth: 2
+    :caption: Contents:
+
+    config_usage
+    config_example
