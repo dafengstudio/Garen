@@ -12,8 +12,7 @@ import requests
 """
 .. automodule:: Garen
 
-Garen
-====================
+
 
 """
 
