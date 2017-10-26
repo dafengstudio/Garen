@@ -12,27 +12,35 @@ import requests
 """
 .. automodule:: Garen
 
-
-
 """
+
 
 class Garen(threading.Thread):
     """
-    使用线程便于集成到其他系统
+    使用线程方便集成到其它系统
+
+
     """
     DEFAULT_CONFIG_NAME = ".garen.yml"
     SESSION_MAP = {}
 
-    def __init__(self, port, browser_name, config_fpath=None):
+    def __init__(self, port=8899,
+                 browser_name='chrome',
+                 config_fpath=None,
+                 static_root_path=None
+                 ):
         """
 
         :param port:
         :param browser_name:
         :param config_fpath:
+        :param static_root_path:
         """
         self.port = port
         self.browser_name = browser_name
         self._config_fpath = config_fpath
+        self.static_root_path = static_root_path
+        super(Garen, self).__init__()
 
     @property
     def user_directory(self):
@@ -131,6 +139,14 @@ class Garen(threading.Thread):
         if hasattr(self, '_server'):
             return self._server
 
+    @property
+    def listen_ip(self):
+        """
+
+        :return:
+        """
+        return '0.0.0.0'
+
     def run(self):
         """
         run the gevent Server
@@ -138,13 +154,16 @@ class Garen(threading.Thread):
         :return:
         """
         pool = Pool(10000)
-        self._server = StreamServer(('127.0.0.1', self.port), self.hander_revice_stream,
+        self._server = StreamServer((self.listen_ip, self.port), self.hander_revice_stream,
                                     spawn=pool)  # creates a new server
+        print 'LISTEN {0}:{1}'.format(self.listen_ip, self.port)
         self._server.serve_forever()
 
 
 def main():
-    pass
+    o = Garen(port=9999)
+    o.deamon = True
+    o.run()
 
 
 if __name__ == "__main__":
