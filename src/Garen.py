@@ -9,6 +9,13 @@ from http_parser.reader import SocketReader
 from http_parser.http import HttpStream
 import requests
 
+"""
+.. automodule:: Garen
+
+Garen
+====================
+
+"""
 
 class Garen(threading.Thread):
     """
