@@ -6,3 +6,5 @@ gevent #http://www.gevent.org/servers.html
 keyring==8.7
 pyyaml
 sphinxcontrib-inlinesyntaxhighlight
+flask
+requests-toolbelt
