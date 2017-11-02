@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="zh">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>用法 &#8212; Garan 0.0.1 文档</title>
@@ -21,6 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
@@ -50,6 +51,20 @@
 <li class="toctree-l1"><a class="reference internal" href="command.html">纯命令行模式下使用指南</a></li>
 </ul>
 </div>
+<p>使用脚手架过程需要满足两个条件</p>
+<ol class="arabic">
+<li><p class="first">DNS 拦截模式
+1.  浏览器正常发请求
+2.  host 文件拦截请求到代理服务器. 根据请求带上的Header走</p>
+<blockquote>
+<div><p>AJAX 需要加 Header 指定目标代理地址,此处 DNS 走本地 HOST</p>
+</div></blockquote>
+</li>
+<li><p class="first">chrome 插件模式
+1.  浏览器发正常的请求,由代理插件转发到代理地址
+2.  插件再根据 HOST 字段走 DNS</p>
+</li>
+</ol>
 </div>
 
 

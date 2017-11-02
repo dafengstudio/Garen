@@ -305,7 +305,7 @@ class Garen(threading.Thread):
             content_type = resp.headers.get('Content-Type', 'text/html')
             content_type = content_type.strip().split(';')[0]
             print type(contents), resp.status_code, content_type
-            #print response_headers
+            # print response_headers
             flask_response = Response(response=contents,
                                       status=resp.status_code,
                                       headers=response_headers,
@@ -315,7 +315,10 @@ class Garen(threading.Thread):
         self.app.register_blueprint(proxy, url_prefix='')
         with self.app.test_request_context():
             print url_for('proxy.proxy_request')
-        print '{2}: {0}:{1} ..........'.format(self.listen_ip, self.listen_port, 'listen'.upper())
+        print '{2}: {0}:{1} .......... {3}'.format(self.listen_ip,
+                                                   self.listen_port,
+                                                   'listen'.upper(),
+                                                   self.static_root_path)
         self.ws = WSGIServer((self.listen_ip, self.listen_port), self.app)
         self.ws.serve_forever()
         return False

@@ -4,3 +4,4 @@ rm -vrf dist
 rm -vrf Garen.egg-info
 python setup.py sdist
 twine upload dist/*
+python setup.py install
