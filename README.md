@@ -16,4 +16,4 @@ easy use proxy app for web develop
 
 # 捐赠
 
-![](https://ws4.sinaimg.cn/large/006tNc79ly1fl4wwvbz15j30u015575y.jpg =250x250)
+<img src="https://ws4.sinaimg.cn/large/006tNc79ly1fl4wwvbz15j30u015575y.jpg" width="320">
