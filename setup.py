@@ -10,7 +10,7 @@ import sys
 root = os.path.dirname(os.path.abspath(__file__))
 setup(
     name='Garen',
-    version='0.0.1',
+    version='0.0.10',
     package_dir={'Garen': 'src'},
     packages=['Garen'],
     # packages=find_packages(exclude=("tests", "tmp", "simpleMVC", "scripts", "docs")),

@@ -49,7 +49,9 @@ class Garen(threading.Thread):
     def __init__(self, port=8899,
                  browser_name='chrome',
                  config_fpath=None,
-                 static_root_path=None
+                 static_root_path=None,
+                 queue=None,
+                 pipe_filter=None
                  ):
         """
 
@@ -65,6 +67,23 @@ class Garen(threading.Thread):
         self.app = Flask(__name__)
         super(Garen, self).__init__()
         self.daemon = True
+        self.queue = queue
+        self.pipe_filter = pipe_filter
+
+    @property
+    def pipe_filter_fun(self):
+        if self.pipe_filter:
+            return self.pipe_filter
+        else:
+            return lambda x: x
+
+    @property
+    def pipe_queue(self):
+        """
+
+        :return:
+        """
+        return self.queue
 
     @property
     def user_directory(self):
@@ -154,12 +173,12 @@ class Garen(threading.Thread):
             dest_host_str = self.config.get(host_str)
             ip = self.get_dest_ip_by_host(dest_host_str)
             port = self.get_dest_port_by_host(dest_host_str)
-            print '[USE][CONFIG] {0} => {1}:{2}'.format(host_str, ip, port)
+            # print '[USE][CONFIG] {0} => {1}:{2}'.format(host_str, ip, port)
 
         else:
             ip = socket.gethostbyname(self.get_dest_ip_by_host(host_str))
             port = self.get_dest_port_by_host(host_str)
-            print '[USE][DNS] {0} => {1}:{2}'.format(host_str, ip, port)
+            # print '[USE][DNS] {0} => {1}:{2}'.format(host_str, ip, port)
         return "{0}:{1}".format(ip, port)
 
     def get_dest_ip_by_host(self, host_str):
@@ -190,6 +209,17 @@ class Garen(threading.Thread):
         """
         return self._port or 9999
 
+    def pipe_path(self, path):
+        """
+
+        :param path:
+        :return:
+        """
+        if self.pipe_queue:
+            _ = self.pipe_filter_fun(path)
+            if _:
+                self.pipe_queue.put(_)
+
     @property
     def listen_ip(self):
         """
@@ -217,9 +247,20 @@ class Garen(threading.Thread):
         """
         from gevent.wsgi import WSGIServer
         self.app.debug = False
+        from flask import make_response
+        from functools import update_wrapper
+
+        def nocache(f):
+            def new_func(*args, **kwargs):
+                resp = make_response(f(*args, **kwargs))
+                resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+                return resp
+
+            return update_wrapper(new_func, f)
 
         @proxy.route('/', defaults={'path': ''}, methods=METHOD_LIST)
         @proxy.route('/<path:path>', methods=METHOD_LIST)
+        @nocache
         def proxy_request(path):
             """
             1.  没有代理请求的时候
@@ -230,17 +271,19 @@ class Garen(threading.Thread):
             :return:
             """
             import os
+            self.pipe_path(path)
             from urlparse import urlparse, urljoin
+
             if (not request.headers.get('PROXY')) and (request.headers.get('HOST', "")):
                 static_path = os.path.join(self.static_root_path, path)
-                print "[SERVE]", static_path
+                # print "[SERVE]", static_path
                 return send_from_directory(self.static_root_path, path)
             proxy_path = path
             headers = request.headers
             # proxy_netloc =
             scheme, hostname, port = self.get_target_netloc_from_headers(headers)
-            print "H: '%s' P: %d" % (hostname, port)
-            print "F: '%s'" % (proxy_path)
+            # print "H: '%s' P: %d" % (hostname, port)
+            # print "F: '%s'" % (proxy_path)
             # Whitelist a few headers to pass on
             request_headers = headers
             if request.query_string:
@@ -255,11 +298,11 @@ class Garen(threading.Thread):
             else:
                 form_data = None
             new_request_headers = dict(request_headers)  # self.update_request_headers(request_headers)
-            self.print_proxy_topology(
-                headers.get('PROXY'),
-                '{0}:{1}'.format(hostname, port),
-                ''
-            )
+            # self.print_proxy_topology(
+            #    headers.get('PROXY'),
+            #    '{0}:{1}'.format(hostname, port),
+            #    ''
+            # )
             resp = self.proxy_request(request.method, scheme, path, hostname, port, new_request_headers, form_data)
             # Clean up response headers for forwarding
             d = {}
@@ -269,7 +312,7 @@ class Garen(threading.Thread):
                 response_headers[key] = value
             response_headers
             for key, value in resp.headers.items():
-                print "HEADER: '%s':'%s'" % (key, value)
+                # print "HEADER: '%s':'%s'" % (key, value)
                 d[key.lower()] = value
                 if key in ["content-length", "connection", "content-type", 'Content-Encoding',
                            'Set-Cookie', 'Vary',
@@ -304,7 +347,7 @@ class Garen(threading.Thread):
             contents = resp.text
             content_type = resp.headers.get('Content-Type', 'text/html')
             content_type = content_type.strip().split(';')[0]
-            print type(contents), resp.status_code, content_type
+            # print type(contents), resp.status_code, content_type
             # print response_headers
             flask_response = Response(response=contents,
                                       status=resp.status_code,
@@ -313,12 +356,12 @@ class Garen(threading.Thread):
             return flask_response
 
         self.app.register_blueprint(proxy, url_prefix='')
-        with self.app.test_request_context():
-            print url_for('proxy.proxy_request')
-        print '{2}: {0}:{1} .......... {3}'.format(self.listen_ip,
-                                                   self.listen_port,
-                                                   'listen'.upper(),
-                                                   self.static_root_path)
+        # with self.app.test_request_context():
+        #    print url_for('proxy.proxy_request')
+        # print '{2}: {0}:{1} .......... {3}'.format(self.listen_ip,
+        #                                           self.listen_port,
+        #                                           'listen'.upper(),
+        #                                           self.static_root_path)
         self.ws = WSGIServer((self.listen_ip, self.listen_port), self.app)
         self.ws.serve_forever()
         return False
@@ -442,7 +485,7 @@ class Garen(threading.Thread):
             'User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
         headers['Connection'] = 'close'
         print '[REQUEST]', method, request_url, data
-        print headers
+        # print headers
         if data:
             resp = self.session.request(method, request_url, data=data, headers=headers)
         else:
