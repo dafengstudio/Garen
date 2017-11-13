@@ -504,7 +504,10 @@ class Garen(threading.Thread):
         headers[
             'User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
         headers['Connection'] = 'close'
-        print '[REQUEST]', method, request_url, data
+        if method == 'GET':
+            print '[REQUEST]', method, request_url, data
+        else:
+            print '[REQUEST]', method, request_url
         # print headers
         cookies = {}
         for key, value in self.proxy_headers:
