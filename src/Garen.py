@@ -159,7 +159,7 @@ class Garen(threading.Thread):
         _ = []
         for cookie in self.browser_cookie:
             if cookie.domain.find(netloc) >= 0:
-                #print cookie, dir(cookie)
+                # print cookie, dir(cookie)
                 _.append((cookie.name, cookie.value))
         return _
 
@@ -307,14 +307,14 @@ class Garen(threading.Thread):
                 path = "/%s?%s" % (proxy_path, request.query_string)
             else:
                 path = "/" + proxy_path
+            new_request_headers = dict(request_headers)  # self.update_request_headers(request_headers)
 
             if request.method == "POST" or request.method == "PUT" or request.method == 'PATCH':
                 form_data = list(self.iterform(request.form))
                 form_data = urllib.urlencode(form_data)
-                request_headers["Content-Length"] = len(form_data)
+                new_request_headers["Content-Length"] = len(form_data)
             else:
                 form_data = None
-            new_request_headers = dict(request_headers)  # self.update_request_headers(request_headers)
             # self.print_proxy_topology(
             #    headers.get('PROXY'),
             #    '{0}:{1}'.format(hostname, port),
