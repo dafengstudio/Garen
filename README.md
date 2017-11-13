@@ -9,6 +9,21 @@
 easy use proxy app for web develop
 
 
+# install
+
+1. from pypi
+
+```bash
+pip  installl Garen
+```
+
+2. from github
+
+```bash
+pip install https://github.com/yishenggudou/Garen/archive/master.zip
+```
+
+
 
 # design 
 
