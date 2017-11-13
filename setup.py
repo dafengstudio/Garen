@@ -10,7 +10,7 @@ import sys
 root = os.path.dirname(os.path.abspath(__file__))
 setup(
     name='Garen',
-    version='0.0.10',
+    version='0.0.13',
     package_dir={'Garen': 'src'},
     packages=['Garen'],
     # packages=find_packages(exclude=("tests", "tmp", "simpleMVC", "scripts", "docs")),
@@ -21,7 +21,8 @@ setup(
     license='',
     author='timger',
     author_email='',
-    setup_requires=['flask', 'gevent', 'requests', 'browsercookie'],
+    # setup_requires=['flask', 'gevent', 'requests', 'browsercookie'],
+    setup_requires=[],
     description=open(os.path.join(root, 'README.md')).read(),
     # zip_safe=False
 )

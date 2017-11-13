@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-rm -vrf build
-rm -vrf dist
-rm -vrf Garen.egg-info
+rm -rf build
+rm -rf dist
+rm -rf Garen.egg-info
 python setup.py sdist
-twine upload dist/*
 python setup.py install
+twine upload dist/*

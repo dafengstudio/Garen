@@ -51,7 +51,9 @@ class Garen(threading.Thread):
                  config_fpath=None,
                  static_root_path=None,
                  queue=None,
-                 pipe_filter=None
+                 pipe_filter=None,
+                 proxy_headers=None,
+                 proxy_cookies=None
                  ):
         """
 
@@ -68,6 +70,8 @@ class Garen(threading.Thread):
         super(Garen, self).__init__()
         self.daemon = True
         self.queue = queue
+        self.proxy_headers = proxy_headers or {}
+        self.proxy_cookies = proxy_cookies or {}
         self.pipe_filter = pipe_filter
 
     @property
@@ -144,6 +148,19 @@ class Garen(threading.Thread):
             _ = browsercookie.firefox()
         else:
             raise NotSupportError("just support chrome and firefox")
+        return _
+
+    def get_cookie_items_from_netloc(self, netloc):
+        """
+
+        :param netloc:
+        :return:
+        """
+        _ = []
+        for cookie in self.browser_cookie:
+            if cookie.domain.find(netloc) >= 0:
+                #print cookie, dir(cookie)
+                _.append((cookie.name, cookie.value))
         return _
 
     def get_response_headers(self, headers):
@@ -261,7 +278,7 @@ class Garen(threading.Thread):
         @proxy.route('/', defaults={'path': ''}, methods=METHOD_LIST)
         @proxy.route('/<path:path>', methods=METHOD_LIST)
         @nocache
-        def proxy_request(path):
+        def _proxy_request(path):
             """
             1.  没有代理请求的时候
 
@@ -312,10 +329,10 @@ class Garen(threading.Thread):
                 response_headers[key] = value
             response_headers
             for key, value in resp.headers.items():
-                # print "HEADER: '%s':'%s'" % (key, value)
+                # print "HEADER: '%s':'%s'" % (key, value),'Set-Cookie',
                 d[key.lower()] = value
                 if key in ["content-length", "connection", "content-type", 'Content-Encoding',
-                           'Set-Cookie', 'Vary',
+                           'Vary',
                            'Cache-Control', 'Expires', 'Transfer-Encoding']:
                     continue
                 else:
@@ -353,6 +370,9 @@ class Garen(threading.Thread):
                                       status=resp.status_code,
                                       headers=response_headers,
                                       content_type=content_type)
+            for key, value in self.get_cookie_items_from_netloc(hostname):
+                flask_response.set_cookie(key, value)
+
             return flask_response
 
         self.app.register_blueprint(proxy, url_prefix='')
@@ -486,10 +506,15 @@ class Garen(threading.Thread):
         headers['Connection'] = 'close'
         print '[REQUEST]', method, request_url, data
         # print headers
+        cookies = {}
+        for key, value in self.proxy_headers:
+            headers[key] = value
+        for key, value in self.proxy_cookies:
+            cookies[key] = value
         if data:
-            resp = self.session.request(method, request_url, data=data, headers=headers)
+            resp = self.session.request(method, request_url, data=data, headers=headers, cookies=cookies)
         else:
-            resp = self.session.request(method, request_url, headers=headers)
+            resp = self.session.request(method, request_url, headers=headers, cookies=cookies)
         return resp
 
     def print_proxy_topology(self, sender, request_domain, request_real_ip_host):
