@@ -312,7 +312,7 @@ class Garen(threading.Thread):
             if request.method == "POST" or request.method == "PUT" or request.method == 'PATCH':
                 form_data = list(self.iterform(request.form))
                 form_data = urllib.urlencode(form_data)
-                new_request_headers["Content-Length"] = len(form_data)
+                new_request_headers["Content-Length"] = str(len(form_data))
             else:
                 form_data = None
             # self.print_proxy_topology(
